@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Molecule Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .property-table .table-striped tbody tr:nth-child(even) {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        .property-table .table-striped tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+        .molecule-card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card molecule-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">{{ medicine_name }}</h2>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="data:image/png;base64,{{ molecule_image }}" 
+                             class="img-fluid mb-3" alt="Molecule Structure">
+                        
+                        <div class="alert alert-info">
+                            <strong>Therapeutic Property:</strong> {{ medicine_property }}
+                        </div>
+                        
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <p><strong>SMILES:</strong> {{ smiles }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-3 property-table molecule-card">
+                    <div class="card-header bg-primary text-white">
+                        Molecular Properties
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped" id="propertiesTable">
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="propertiesTableBody">
+                                <!-- Properties will be dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/molecule_properties', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'smiles': '{{ smiles }}'
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(properties => {
+                const tbody = document.getElementById('propertiesTableBody');
+                Object.entries(properties).forEach(([key, value]) => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = key;
+                    row.insertCell(1).textContent = value;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching properties:', error);
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
