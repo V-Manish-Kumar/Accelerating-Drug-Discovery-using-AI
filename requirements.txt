@@ -5,3 +5,4 @@ pandas==2.2.1
 rdkit==2023.09.5
 google-generativeai==0.4.0
 Pillow==10.2.0
+gunicorn==21.2.0
